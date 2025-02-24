@@ -24,8 +24,8 @@ This application must be properly tested and documented using `README.md`, Swagg
 
 - **API Documentation with Swagger**  
   Use Swagger to automatically generate API documentation.  
-  http://localhost:8080/swagger-ui.html
-
+  [Access to Swagger-UI](http://localhost:8080/swagger-ui/index.html)
+  
 ### Steps to Follow:  
 
 1. **API Design:** Define the necessary endpoints for managing a Blackjack game, including game creation, making plays, etc.  
