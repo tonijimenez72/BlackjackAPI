@@ -1,0 +1,52 @@
+HELP.md
+
+### Enviroment vars ###
+.env
+*.env
+
+### Maven ###
+target/
+build/
+out/
+
+### Maven Wrapper ###
+.mvn/wrapper/maven-wrapper.jar
+.mvn/wrapper/maven-wrapper.properties
+
+### Logs ###
+logs/
+*.log
+*.log.*
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings/
+.springBeans
+.sts4-cache
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+
+### VS Code ###
+.vscode/
+
+### Gradle ###
+Gradle
+.gradle/
+
+### Test Compilations ###
+!**/src/main/**/build/
+!**/src/test/**/build/
