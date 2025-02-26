@@ -8,10 +8,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import reactor.test.StepVerifier;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -23,35 +24,49 @@ class PlayerControllerTest {
     @InjectMocks
     private PlayerController playerController;
 
+    private WebTestClient webTestClient;
+
+    private Player player;
+
     @BeforeEach
     void setUp() {
-        playerService = mock(PlayerService.class);
-        playerController = new PlayerController(playerService);
+        webTestClient = WebTestClient.bindToController(playerController).build();
+        player = new Player(1L, "John Doe", 5);
     }
 
     @Test
-    void updatePlayerName_ShouldReturnUpdatedPlayer() {
-        Player player = new Player();
-        when(playerService.updatePlayerName(1L, "NewName")).thenReturn(Mono.just(player));
+    void updatePlayerName_Success() {
+        when(playerService.updatePlayerName(any(Long.class), any(String.class)))
+                .thenReturn(Mono.just(new Player(1L, "Jane Doe", 5)));
 
-        StepVerifier.create(playerController.updatePlayerName(1L, "NewName"))
-                .expectNext(player)
-                .verifyComplete();
+        webTestClient.put()
+                .uri(uriBuilder -> uriBuilder.path("/player/{playerId}").queryParam("playerName", "Jane Doe").build(1L))
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(Player.class)
+                .value(updatedPlayer -> {
+                    assert updatedPlayer.getId().equals(1L);
+                    assert updatedPlayer.getName().equals("Jane Doe");
+                    assert updatedPlayer.getPlayerWinsCounter() == 5;
+                });
 
-        verify(playerService, times(1)).updatePlayerName(1L, "NewName");
+        verify(playerService, times(1)).updatePlayerName(1L, "Jane Doe");
     }
 
     @Test
-    void getRanking_ShouldReturnRankingOfAllPlayers() {
-        Player player1 = new Player();
-        Player player2 = new Player();
-        when(playerService.getRanking()).thenReturn(Flux.just(player1, player2));
+    void getRanking_Success() {
+        when(playerService.getRanking()).thenReturn(Flux.just(player));
 
-        StepVerifier.create(playerController.getRanking())
-                .expectNext(player1, player2)
-                .verifyComplete();
+        webTestClient.get()
+                .uri("/ranking")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBodyList(Player.class)
+                .value(players -> {
+                    assert !players.isEmpty();
+                    assert players.get(0).getName().equals("John Doe");
+                });
 
         verify(playerService, times(1)).getRanking();
     }
-
 }

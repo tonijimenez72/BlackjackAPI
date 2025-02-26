@@ -6,9 +6,9 @@ import cat.itacademy.s05.t01.n01.blackjackapi.enums.Winner;
 import cat.itacademy.s05.t01.n01.blackjackapi.exception.custom.GameAlreadyEndedException;
 import cat.itacademy.s05.t01.n01.blackjackapi.exception.custom.GameNotFoundException;
 import cat.itacademy.s05.t01.n01.blackjackapi.model.Game;
-import cat.itacademy.s05.t01.n01.blackjackapi.model.Player;
 import cat.itacademy.s05.t01.n01.blackjackapi.repository.*;
 import cat.itacademy.s05.t01.n01.blackjackapi.service.GameService;
+import cat.itacademy.s05.t01.n01.blackjackapi.service.PlayerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,13 +19,15 @@ import reactor.core.publisher.Mono;
 @Service
 public class GameServiceImpl implements GameService {
     private final GameRepository gameRepository;
-    private final PlayerRepository playerRepository;
+    private final PlayerService playerService;
 
     @Override
     public Mono<Game> createGame(String playerName) {
-        return playerRepository.findByName(playerName)
-                .switchIfEmpty(playerRepository.save(Player.create(playerName)))
-                .flatMap(savedPlayer -> gameRepository.save(new Game(savedPlayer)));
+        return playerService.findByName(playerName)
+                .flatMap(savedPlayer -> {
+                    Game game = new Game(savedPlayer.getId(), savedPlayer.getName());
+                    return gameRepository.save(game);
+                });
     }
 
     @Override
@@ -36,12 +38,11 @@ public class GameServiceImpl implements GameService {
                     if (game.getStatus() == GameStatus.FINISHED) {
                         return Mono.error(new GameAlreadyEndedException("Game already ended with id: " + gameId));
                     }
-
                     game.playMove(move);
 
-                    return game.getWinner() == Winner.PLAYER
-                            ? updatePlayerWins(game)
-                            : gameRepository.save(game);
+                    return game.getWinner() == Winner.PLAYER ?
+                            playerService.updatePlayerWins(game.getPlayerId()).then(gameRepository.save(game)) :
+                            gameRepository.save(game);
                 });
     }
 
@@ -61,11 +62,4 @@ public class GameServiceImpl implements GameService {
         return gameRepository.deleteById(id);
     }
 
-    private Mono<Game> updatePlayerWins(Game game) {
-        Player player = game.getPlayer();
-        player.incrementWins();
-
-        return playerRepository.save(player)
-                .then(gameRepository.save(game));
-    }
 }

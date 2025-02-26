@@ -19,8 +19,4 @@ public class Player {
     public void incrementWins() {
         this.playerWinsCounter++;
     }
-
-    public static Player create(String name) {
-        return new Player(null, name, 0);
-    }
 }
