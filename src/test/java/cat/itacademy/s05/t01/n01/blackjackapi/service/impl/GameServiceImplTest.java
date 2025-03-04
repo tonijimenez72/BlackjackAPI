@@ -6,9 +6,10 @@ import cat.itacademy.s05.t01.n01.blackjackapi.exception.custom.GameAlreadyEndedE
 import cat.itacademy.s05.t01.n01.blackjackapi.exception.custom.GameNotFoundException;
 import cat.itacademy.s05.t01.n01.blackjackapi.model.Game;
 import cat.itacademy.s05.t01.n01.blackjackapi.model.Player;
-import cat.itacademy.s05.t01.n01.blackjackapi.repository.GameRepository;
+import cat.itacademy.s05.t01.n01.blackjackapi.repository.mongoDb.GameRepository;
 import cat.itacademy.s05.t01.n01.blackjackapi.service.PlayerService;
-import cat.itacademy.s05.t01.n01.blackjackapi.service.impl.GameServiceImpl;
+import io.github.cdimascio.dotenv.Dotenv;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -36,6 +37,14 @@ class GameServiceImplTest {
 
     private Player player;
     private Game game;
+
+    @BeforeAll
+    public static void loadEnv() {
+        Dotenv dotenv = Dotenv.configure().load();
+        dotenv.entries().forEach(entry -> {
+            System.setProperty(entry.getKey(), entry.getValue());
+        });
+    }
 
     @BeforeEach
     void setUp() {

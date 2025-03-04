@@ -4,6 +4,8 @@ import cat.itacademy.s05.t01.n01.blackjackapi.enums.PlayerMove;
 import cat.itacademy.s05.t01.n01.blackjackapi.exception.custom.InvalidRequestException;
 import cat.itacademy.s05.t01.n01.blackjackapi.model.Game;
 import cat.itacademy.s05.t01.n01.blackjackapi.service.GameService;
+import io.github.cdimascio.dotenv.Dotenv;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -24,6 +26,16 @@ class GameControllerTest {
     @InjectMocks
     private GameController gameController;
 
+    /*@BeforeAll
+    public static void loadEnv() {
+        Dotenv dotenv = Dotenv.configure().load();
+        dotenv.entries().forEach(entry -> {
+            System.setProperty(entry.getKey(), entry.getValue());
+        });
+    }
+
+     */
+
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
@@ -38,8 +50,10 @@ class GameControllerTest {
 
         Mono<Game> result = gameController.createGame(playerName);
 
-        assertNotNull(result);
-        assertEquals(mockGame, result.block());
+        StepVerifier.create(result)
+                .expectNext(mockGame)
+                .verifyComplete();
+
         verify(gameService, times(1)).createGame(playerName);
     }
 
@@ -64,8 +78,10 @@ class GameControllerTest {
 
         Mono<Game> result = gameController.playMove(gameId, move);
 
-        assertNotNull(result);
-        assertEquals(mockGame, result.block());
+        StepVerifier.create(result)
+                .expectNext(mockGame)
+                .verifyComplete();
+
         verify(gameService, times(1)).playGame(gameId, move);
     }
 
@@ -78,8 +94,10 @@ class GameControllerTest {
 
         Mono<Game> result = gameController.getGame(gameId);
 
-        assertNotNull(result);
-        assertEquals(mockGame, result.block());
+        StepVerifier.create(result)
+                .expectNext(mockGame)
+                .verifyComplete();
+
         verify(gameService, times(1)).getGame(gameId);
     }
 
@@ -92,7 +110,11 @@ class GameControllerTest {
 
         Flux<Game> result = gameController.getAllGames();
 
-        assertEquals(2, result.collectList().block().size());
+        StepVerifier.create(result)
+                .expectNext(game1)
+                .expectNext(game2)
+                .verifyComplete();
+
         verify(gameService, times(1)).getAllGames();
     }
 
@@ -109,7 +131,6 @@ class GameControllerTest {
 
         verify(gameService, times(1)).deleteGame(gameId);
     }
-
 
     @Test
     void createGame_InvalidCharacters_ThrowsException() {

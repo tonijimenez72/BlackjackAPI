@@ -2,8 +2,7 @@ package cat.itacademy.s05.t01.n01.blackjackapi.service.impl;
 
 import cat.itacademy.s05.t01.n01.blackjackapi.exception.custom.PlayerNotFoundException;
 import cat.itacademy.s05.t01.n01.blackjackapi.model.Player;
-import cat.itacademy.s05.t01.n01.blackjackapi.repository.PlayerRepository;
-import cat.itacademy.s05.t01.n01.blackjackapi.service.impl.PlayerServiceImpl;
+import cat.itacademy.s05.t01.n01.blackjackapi.repository.mySQL.PlayerRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -86,13 +85,13 @@ class PlayerServiceImplTest {
 
     @Test
     void getRanking_Success() {
-        when(playerRepository.findAll()).thenReturn(Flux.just(player));
+        when(playerRepository.findAllByOrderByPlayerWinsCounterDesc()).thenReturn(Flux.just(player));
 
         StepVerifier.create(playerService.getRanking())
                 .expectNext(player)
                 .verifyComplete();
 
-        verify(playerRepository, times(1)).findAll();
+        verify(playerRepository, times(1)).findAllByOrderByPlayerWinsCounterDesc();
     }
 
     @Test

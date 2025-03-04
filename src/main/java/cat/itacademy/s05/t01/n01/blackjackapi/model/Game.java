@@ -68,8 +68,10 @@ public class Game {
     private void stand() {
         while (croupierHand.getHandValue() < 17 && !remainingDeck.isEmpty()) {
             croupierHand.addCard(remainingDeck.remove(0));
+
         }
-        determineWinner();
+
+            determineWinner();
     }
 
     private void determineWinner() {
@@ -77,8 +79,9 @@ public class Game {
         int croupierScore = croupierHand.getHandValue();
 
         Winner finalWinner =
-                (croupierHand.isBust() || (croupierScore > playerScore && croupierScore <= 21))? Winner.CROUPIER :
-                (playerHand.isBust() || (playerScore > croupierScore && playerScore <= 21))? Winner.PLAYER :
+                (croupierScore > 21) ? Winner.PLAYER :
+                (playerScore > croupierScore) ? Winner.PLAYER :
+                (playerScore < croupierScore) ? Winner.CROUPIER :
                 Winner.TIE;
 
         finishGame(finalWinner);

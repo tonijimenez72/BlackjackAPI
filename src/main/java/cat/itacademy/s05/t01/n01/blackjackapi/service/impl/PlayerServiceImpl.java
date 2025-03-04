@@ -2,7 +2,7 @@ package cat.itacademy.s05.t01.n01.blackjackapi.service.impl;
 
 import cat.itacademy.s05.t01.n01.blackjackapi.exception.custom.PlayerNotFoundException;
 import cat.itacademy.s05.t01.n01.blackjackapi.model.Player;
-import cat.itacademy.s05.t01.n01.blackjackapi.repository.PlayerRepository;
+import cat.itacademy.s05.t01.n01.blackjackapi.repository.mySQL.PlayerRepository;
 import cat.itacademy.s05.t01.n01.blackjackapi.service.PlayerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,7 +39,7 @@ public class PlayerServiceImpl implements PlayerService {
 
     @Override
     public Flux<Player> getRanking() {
-        return playerRepository.findAll();
+        return playerRepository.findAllByOrderByPlayerWinsCounterDesc();
     }
 
     @Override

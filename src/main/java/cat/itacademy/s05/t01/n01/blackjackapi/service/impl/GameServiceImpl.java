@@ -6,7 +6,7 @@ import cat.itacademy.s05.t01.n01.blackjackapi.enums.Winner;
 import cat.itacademy.s05.t01.n01.blackjackapi.exception.custom.GameAlreadyEndedException;
 import cat.itacademy.s05.t01.n01.blackjackapi.exception.custom.GameNotFoundException;
 import cat.itacademy.s05.t01.n01.blackjackapi.model.Game;
-import cat.itacademy.s05.t01.n01.blackjackapi.repository.*;
+import cat.itacademy.s05.t01.n01.blackjackapi.repository.mongoDb.GameRepository;
 import cat.itacademy.s05.t01.n01.blackjackapi.service.GameService;
 import cat.itacademy.s05.t01.n01.blackjackapi.service.PlayerService;
 import lombok.RequiredArgsConstructor;
